@@ -1,0 +1,80 @@
+{{- $namespace := .Values.namespace -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reporter
+  namespace: {{ $namespace }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: reporter
+  template:
+    metadata:
+      labels:
+        app: reporter
+    spec:
+      nodeSelector:
+        kubernetes.io/os: linux
+      containers:
+        - name: reporter
+          image: fastvue/reporter-{{ .Values.image.brand }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 80
+              name: reporter-http
+            - containerPort: 50514
+              name: r-syslog-tcp
+              protocol: TCP
+            - containerPort: 50514
+              name: r-syslog-udp
+              protocol: UDP
+          env:
+            - name: FASTVUE_URI
+              value: "https://{{ .Values.hostname }}"
+            {{- if and .Values.auth .Values.auth.oidc }}
+            - name: FASTVUE_AUTH_LOGOUT_URL
+              value: "{{ .Values.auth.oidc.redirectEndpoint | default "/oauth2callback" }}?logout="
+            {{- end }}
+            {{- if and .Values.elasticsearch .Values.elasticsearch.uri }}
+            - name: FASTVUE_ELASTICSEARCH_URI
+              value: "{{ .Values.elasticsearch.uri }}"
+            {{- end }}
+            {{- if and .Values.elasticsearch .Values.elasticsearch.apiKey }}
+            - name: FASTVUE_ELASTICSEARCH_AUTH_APIKEY
+              value: "{{ .Values.elasticsearch.apiKey }}"
+            {{- end }}
+            {{- if and .Values.elasticsearch .Values.elasticsearch.recordPrefix }}
+            - name: FASTVUE_ELASTICSEARCH_RECORDPREFIX
+              value: "{{ .Values.elasticsearch.recordPrefix }}"
+            {{- end }}
+            {{- if .Values.syslog }}
+            - name: FASTVUE_DATASOURCE
+              value: "*:50514"
+            {{- end }}
+          resources:
+            requests:
+              cpu: "1"
+              memory: {{ .Values.resources.memory }}
+            limits:
+              cpu: "{{ .Values.resources.cpu }}"
+          volumeMounts:
+            - name: reporter-data
+              mountPath: /data
+              readOnly: false
+            {{- if .Values.auth }}
+            - name: reporter-config
+              mountPath: /data/config/apache
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: reporter-data
+          persistentVolumeClaim:
+            claimName: reporter-data-disk
+        {{- if .Values.auth }}
+        - name: reporter-config
+          configMap:
+            name: reporter-config-apache
+        {{- end }} 

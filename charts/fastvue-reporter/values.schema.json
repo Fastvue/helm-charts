@@ -1,0 +1,220 @@
+{
+	"$schema": "https://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+		"namespace": {
+			"type": "string",
+			"description": "Namespace for the Fastvue Reporter deployment"
+		},
+		"hostname": {
+			"type": "string",
+			"description": "Hostname for the Fastvue Reporter instance"
+		},
+		"recordPrefix": {
+			"type": "string",
+			"description": "Record prefix for Elasticsearch"
+		},
+		"image": {
+			"type": "object",
+			"properties": {
+				"brand": {
+					"type": "string",
+					"description": "Brand of Fastvue Reporter to deploy. See https://hub.docker.com/u/fastvue?search=reporter for available brands"
+				},
+				"tag": {
+					"type": "string",
+					"description": "Docker image tag",
+					"default": "latest"
+				},
+				"pullPolicy": {
+					"type": "string",
+					"enum": ["Always", "IfNotPresent", "Never"],
+					"description": "Image pull policy",
+					"default": "Always"
+				}
+			},
+			"required": ["brand", "tag"]
+		},
+		"auth": {
+			"type": "object",
+			"properties": {
+				"accessRequire": {
+					"type": "string",
+					"description": "Require directive for access to Reporter"
+				},
+				"adminRequire": {
+					"type": "string",
+					"description": "Require directive for admin access to Reporter"
+				},
+				"paths": {
+					"type": "string",
+					"description": "Authentication paths configuration"
+				},
+				"basic": {
+					"type": "object",
+					"properties": {
+						"authpasswd": {
+							"type": "string",
+							"description": "Basic authentication password file content"
+						}
+					}
+				},
+				"oidc": {
+					"type": "object",
+					"properties": {
+						"redirectEndpoint": {
+							"type": "string",
+							"description": "Redirect endpoint for OIDC",
+							"default": "/oauth2callback"
+						},
+						"cryptoPassphrase": {
+							"type": "string",
+							"description": "Crypto passphrase for OIDC",
+							"default": "change-me"
+						},
+						"providerMetadataURL": {
+							"type": "string",
+							"description": "OIDC provider metadata URL",
+							"default": "https://oidc-provider-url"
+						},
+						"clientID": {
+							"type": "string",
+							"description": "OIDC client ID",
+							"default": "client-id"
+						},
+						"clientSecret": {
+							"type": "string",
+							"description": "OIDC client secret",
+							"default": "client-secret"
+						},
+						"scope": {
+							"type": "string",
+							"description": "OIDC scope",
+							"default": "openid email"
+						},
+						"tokenEndpointAuth": {
+							"type": "string",
+							"description": "OIDC token endpoint authentication method",
+							"default": "client_secret_basic"
+						}
+					},
+					"required": ["cryptoPassphrase", "providerMetadataURL", "clientID", "clientSecret"]
+				},
+				"ldap": {
+					"type": "object",
+					"properties": {
+						"authLDAPURL": {
+							"type": "string",
+							"description": "LDAP authentication URL",
+							"default": "ldap://ldap-server-url:389/dc=example,dc=com?uid?sub?(objectClass=*)"
+						},
+						"bindDN": {
+							"type": "string",
+							"description": "LDAP bind DN",
+							"default": "cn=admin,dc=example,dc=com"
+						},
+						"bindPassword": {
+							"type": "string",
+							"description": "LDAP bind password",
+							"default": "password"
+						},
+						"groupAttributeIsDN": {
+							"type": "string",
+							"description": "LDAP group attribute is DN",
+							"default": "true"
+						},
+						"groupAttribute": {
+							"type": "string",
+							"description": "LDAP group attribute",
+							"default": "member"
+						}
+					},
+					"required": ["authLDAPURL", "bindDN", "bindPassword", "groupAttributeIsDN", "groupAttribute"]
+				}
+			},
+			"required": ["accessRequire"],
+			"allOf": [
+				{
+					"oneOf": [
+						{ "required": ["basic"] },
+						{ "required": ["ldap"] },
+						{ "required": ["oidc"] }
+					]
+				}
+			]
+		},
+		"elasticsearch": {
+			"type": "object",
+			"properties": {
+				"uri": {
+					"type": "string",
+					"description": "Elasticsearch cluster URI",
+					"default": "https://cluster-name.es.australiaeast.azure.elastic-cloud.com/"
+				},
+				"apiKey": {
+					"type": "string",
+					"description": "Elasticsearch API key",
+					"default": "aGVsbG8gd29ybGQgOik="
+				}
+			}
+		},
+		"resources": {
+			"type": "object",
+			"properties": {
+				"cpu": {
+					"type": "string",
+					"description": "CPU request",
+					"default": "1"
+				},
+				"memory": {
+					"type": "string",
+					"description": "Memory request",
+					"default": "1Gi"
+				},
+				"storage": {
+					"type": "string",
+					"description": "Storage size",
+					"default": "5Gi"
+				},
+				"storageClass": {
+					"type": "string",
+					"description": "Storage class",
+					"default": "default"
+				}
+			},
+			"required": ["cpu", "memory", "storage", "storageClass"]
+		},
+		"syslog": {
+			"type": "object",
+			"properties": {
+				"port": {
+					"type": "integer",
+					"description": "Syslog port",
+					"default": 50514
+				}
+			},
+			"required": ["port"]
+		},
+		"ingress": {
+			"type": "object",
+			"properties": {
+				"tls": {
+					"type": "object",
+					"properties": {
+						"azureKeyVaultURI": {
+							"type": "string",
+							"description": "Key Vault URI for TLS certificate in Azure",
+							"example": "https://keyvault-name.vault.azure.net/certificates/cert-name"
+						},
+						"secretName": {
+							"type": "string",
+							"description": "Secret name for TLS certificate",
+							"default": "keyvault-reporter-ingress"
+						}
+					}
+				}
+			}
+		}
+	},
+	"required": ["namespace", "hostname", "recordPrefix", "image", "resources", "syslog"]
+}

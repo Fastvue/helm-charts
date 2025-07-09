@@ -1,0 +1,14 @@
+{{- $namespace := .Values.namespace -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: reporter-service-http
+  namespace: {{ $namespace }}
+spec:
+  type: ClusterIP
+  selector:
+    app: reporter
+  ports:
+    - name: reporter-http
+      port: 80
+      targetPort: 80 

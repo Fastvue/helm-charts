@@ -1,0 +1,13 @@
+{{- $namespace := .Values.namespace -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: reporter-data-disk
+  namespace: {{ $namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.resources.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.resources.storage }}

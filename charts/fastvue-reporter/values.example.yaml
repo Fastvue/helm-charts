@@ -1,0 +1,75 @@
+# Example values file for Fastvue Reporter Helm chart
+# Fill in the placeholders with values appropriate for your deployment.
+
+# Instance settings ------------------------------------------------------------
+# Replace all occurrences of `abc123` with a unique identifier for this instance.
+namespace: fastvue-reporter-abc123                # Kubernetes namespace
+hostname: reporter-abc123.example.com             # Public hostname of the Reporter instance
+recordPrefix: fvr-abc123                          # Used as index prefix for Elasticsearch
+
+# Container image settings -----------------------------------------------------
+image:
+  brand: brand                                    # See https://hub.docker.com/u/fastvue?search=reporter for available brands
+  tag: latest                                     # See https://hub.docker.com/u/fastvue?search=reporter for available tags in each brand
+
+# Authentication settings ------------------------------------------------------
+auth:
+  # The "Require" directives for general (viewer) access and admin/API access.
+  # See https://httpd.apache.org/docs/current/mod/mod_authz_core.html#require for more details.
+  #   For Basic use "user (username)" or "valid-user".
+  #   For LDAP use "ldap-group (dn)" / "ldap-user (uid)".
+  #   For OIDC use "claim".
+  # Omitting `adminRequire` will give admin access to anyone matching `accessRequire`.
+  accessRequire: claim roles:fastvue-viewers      # Grants read-only UI access
+  adminRequire: claim roles:fastvue-admins        # Grants admin/API actions
+
+  # Optional fine-grained path / API rules
+  # paths: |
+  #   Use PathRequire "/Settings/Productivity.aspx" "claim roles:fv-admins"
+  #   Use APIRequire "Settings\.Keywords\.|Alerts\." "claim roles:fv-viewers"
+
+  # Only one of the following authentication types can be enabled at a time,
+  # keep the type you want to use and remove the others.
+
+  # # Basic authentication settings --------------------------------------------
+  basic:
+    authpasswd: |-
+      admin:$apr1$randomsalt$hashedpassword
+      viewer:$apr1$randomsalt$hashedpassword
+
+  # # LDAP authentication settings ---------------------------------------------
+  ldap:
+    authLDAPURL: ldap://ldap-server:389/dc=example,dc=com?uid?sub?(objectClass=*)
+    bindDN: cn=admin,dc=example,dc=com
+    bindPassword: password
+    groupAttributeIsDN: "true"
+    groupAttribute: member
+
+  # OIDC authentication settings -----------------------------------------------
+  oidc:
+    cryptoPassphrase: change-me                    # Any random string ≥32 chars
+    providerMetadataURL: https://oidc-provider-url # Well-known metadata URL
+    clientID: client-id                            # Client / application ID
+    clientSecret: client-secret                    # Client secret
+
+# Elasticsearch settings -------------------------------------------------------
+elasticsearch:
+  uri: https://es-cluster.es.region.azure.elastic-cloud.com/
+  apiKey: REPLACE_WITH_BASE64_API_KEY
+
+# Resource / storage requests & limits -----------------------------------------
+resources:
+  cpu: "4"               # Number of CPU cores
+  memory: 4Gi            # Memory allocation
+  storage: 5Gi           # PVC size
+  storageClass: default  # Storage class for PVC (Optional)
+
+# Syslog port exposed by the Reporter container & service ----------------------
+syslog:
+  port: 50514
+
+# Ingress TLS settings ---------------------------------------------------------
+ingress:
+  tls:
+    azureKeyVaultURI: https://keyvault-name.vault.azure.net/certificates/cert-name
+    secretName: keyvault-reporter-ingress 

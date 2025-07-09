@@ -1,0 +1,11 @@
+image:
+  pullPolicy: Always
+
+resources:
+  cpu: "4"
+  memory: 4Gi
+  storage: 5Gi
+  storageClass: default
+
+syslog:
+  port: 50514

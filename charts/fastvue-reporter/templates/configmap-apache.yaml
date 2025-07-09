@@ -1,0 +1,46 @@
+{{- $namespace := .Values.namespace -}}
+{{- if .Values.auth }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reporter-config-apache
+  namespace: {{ $namespace }}
+data:
+{{- if .Values.auth.accessRequire }}
+  auth.conf: |
+    Require {{ .Values.auth.accessRequire }}
+{{- end }}
+{{- if .Values.auth.adminRequire }}
+  authapi.conf: |
+    Require {{ .Values.auth.adminRequire }}
+{{- end }}
+{{- if .Values.auth.paths }}
+  authpaths.conf: |
+{{ .Values.auth.paths | indent 4 }}
+{{- end }}
+{{- if .Values.auth.oidc }}
+  authoidc.conf: |
+    OIDCRedirectURI https://{{ .Values.hostname }}{{ .Values.auth.oidc.redirectEndpoint | default "/oauth2callback" }}
+    OIDCCryptoPassphrase {{ .Values.auth.oidc.cryptoPassphrase }}
+    OIDCProviderMetadataURL {{ .Values.auth.oidc.providerMetadataURL }}
+    OIDCClientID {{ .Values.auth.oidc.clientID }}
+    OIDCClientSecret {{ .Values.auth.oidc.clientSecret }}
+    OIDCScope "{{ .Values.auth.oidc.scope | default "openid email" }}"
+    OIDCProviderTokenEndpointAuth {{ .Values.auth.oidc.tokenEndpointAuth | default "client_secret_basic" }}
+    OIDCXForwardedHeaders X-Forwarded-Proto
+{{- end }}
+{{- if .Values.auth.basic }}
+  authbasic.conf: |
+    AuthUserFile /data/config/apache/authpasswd
+  authpasswd: |
+{{ .Values.auth.basic.authpasswd | indent 4 }}
+{{- end }}
+{{- if .Values.auth.ldap }}
+  authldap.conf: |
+    AuthLDAPURL "{{ .Values.auth.ldap.authLDAPURL }}"
+    AuthLDAPBindDN "{{ .Values.auth.ldap.bindDN }}"
+    AuthLDAPBindPassword "{{ .Values.auth.ldap.bindPassword }}"
+    AuthLDAPGroupAttributeIsDN {{ .Values.auth.ldap.groupAttributeIsDN | default "true" }}
+    AuthLDAPGroupAttribute {{ .Values.auth.ldap.groupAttribute | default "member" }}
+{{- end }}
+{{- end }} 

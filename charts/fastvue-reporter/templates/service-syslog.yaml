@@ -1,0 +1,19 @@
+{{- $namespace := .Values.namespace -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: reporter-service-syslog
+  namespace: {{ $namespace }}
+spec:
+  type: LoadBalancer
+  selector:
+    app: reporter
+  ports:
+    - name: r-syslog-tcp
+      port: {{ .Values.syslog.port }}
+      targetPort: 50514
+      protocol: TCP
+    - name: r-syslog-udp
+      port: {{ .Values.syslog.port }}
+      targetPort: 50514
+      protocol: UDP 
