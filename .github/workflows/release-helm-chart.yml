@@ -1,0 +1,33 @@
+name: Release Helm chart
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'charts/**'           # only re-run when a chart changes
+  workflow_dispatch:          # allow manual trigger
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:              # fine-grained permissions
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0        # CR needs tags & history
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.14.4      # keep in sync with your local version
+
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.6.0
+      env:
+        CR_PACKAGE_PATH: .cr-release-packages
+        CR_RELEASE_NAME_TEMPLATE: "{{ .Name }}-{{ .Version }}"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
