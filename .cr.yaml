@@ -1,0 +1,4 @@
+owner: fastvue
+git-base-url: https://github.com
+git-upload-url: https://github.com
+skip-existing: true
