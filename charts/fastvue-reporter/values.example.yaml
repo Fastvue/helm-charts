@@ -60,6 +60,7 @@ elasticsearch:
 # Resource / storage requests & limits -----------------------------------------
 resources:
   cpu: "4"               # Number of CPU cores
+  cpuMinimum: "0.25"     # Minimum CPU cores
   memory: 4Gi            # Memory allocation
   storage: 5Gi           # PVC size
   storageClass: default  # Storage class for PVC (Optional)

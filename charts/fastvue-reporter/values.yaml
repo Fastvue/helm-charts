@@ -3,6 +3,7 @@ image:
 
 resources:
   cpu: "4"
+  cpuMinimum: "0.25"
   memory: 4Gi
   storage: 5Gi
   storageClass: default
