@@ -23,27 +23,46 @@ auth:
   accessRequire: claim roles:fastvue-viewers      # Grants read-only UI access
   adminRequire: claim roles:fastvue-admins        # Grants admin/API actions
 
-  # Optional fine-grained path / API rules
+  # Optional auth file settings ------------------------------------------------
+  # Use this if you want to use custom auth files instead of the accessRequire and adminRequire settings.
+
+  # authFile: |
+  #   Require valid-user
+  # authApiFile: |
+  #   Require user admin
+
+  # Optional fine-grained path / API rules -------------------------------------
+  # Can use macros PathRequire and APIRequire via `Use` directive to define rules
+  # or write Location directives to define rules.
+
   # paths: |
-  #   Use PathRequire "/Settings/Productivity.aspx" "claim roles:fv-admins"
-  #   Use APIRequire "Settings\.Keywords\.|Alerts\." "claim roles:fv-viewers"
+  #   Use PathRequire "/Settings/Productivity.aspx" "claim roles:fastvue-admins"
+  #   Use APIRequire "Settings\.Keywords\.|Alerts\." "claim roles:fastvue-viewers"
+  #   <Location "/Settings/Productivity.aspx">
+  #     Require claim roles:fastvue-admins
+  #   </Location>
 
   # Only one of the following authentication types can be enabled at a time,
   # keep the type you want to use and remove the others.
 
-  # # Basic authentication settings --------------------------------------------
+  # Basic authentication settings ----------------------------------------------
   basic:
     authpasswd: |-
       admin:$apr1$randomsalt$hashedpassword
       viewer:$apr1$randomsalt$hashedpassword
 
-  # # LDAP authentication settings ---------------------------------------------
+  # LDAP authentication settings -----------------------------------------------
   ldap:
     authLDAPURL: ldap://ldap-server:389/dc=example,dc=com?uid?sub?(objectClass=*)
     bindDN: cn=admin,dc=example,dc=com
     bindPassword: password
-    groupAttributeIsDN: "true"
+    groupAttributeIsDN: true
     groupAttribute: member
+    verifyCert: true
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      ...
+      -----END CERTIFICATE-----
 
   # OIDC authentication settings -----------------------------------------------
   oidc:
@@ -55,7 +74,7 @@ auth:
 # Elasticsearch settings -------------------------------------------------------
 elasticsearch:
   uri: https://es-cluster.es.region.azure.elastic-cloud.com/
-  apiKey: REPLACE_WITH_BASE64_API_KEY
+  apiKey: REPLACE_WITH_API_KEY
 
 # Resource / storage requests & limits -----------------------------------------
 resources:

@@ -6,18 +6,47 @@ metadata:
   name: reporter-config-apache
   namespace: {{ $namespace }}
 data:
+  general.conf: |
+    {{- if .Values.auth.ldap }}
+
+    {{- if and .Values.auth.ldap .Values.auth.ldap.cert }}
+    LDAPTrustedGlobalCert CA_BASE64 /data/config/apache/authldap-cert.crt
+    {{- end }}
+
+    {{- if (hasKey .Values.auth.ldap "verifyCert") }}
+    {{- if .Values.auth.ldap.verifyCert }}
+    LDAPVerifyServerCert On
+    {{- else }}
+    LDAPVerifyServerCert Off
+    {{- end }}
+    {{- end }}
+
+    {{- end }}
+
 {{- if .Values.auth.accessRequire }}
   auth.conf: |
     Require {{ .Values.auth.accessRequire }}
+{{- else if .Values.auth.authFile }}
+  auth.conf: |
+{{ .Values.auth.authFile | indent 4 }}
+{{- else }}
+  auth.conf: |
+    Require all granted
 {{- end }}
+
 {{- if .Values.auth.adminRequire }}
   authapi.conf: |
     Require {{ .Values.auth.adminRequire }}
+{{- else if .Values.auth.authApiFile }}
+  authapi.conf: |
+{{ .Values.auth.authApiFile | indent 4 }}
 {{- end }}
+
 {{- if .Values.auth.paths }}
   authpaths.conf: |
 {{ .Values.auth.paths | indent 4 }}
 {{- end }}
+
 {{- if .Values.auth.oidc }}
   authoidc.conf: |
     OIDCRedirectURI https://{{ .Values.hostname }}{{ .Values.auth.oidc.redirectEndpoint | default "/oauth2callback" }}
@@ -29,18 +58,26 @@ data:
     OIDCProviderTokenEndpointAuth {{ .Values.auth.oidc.tokenEndpointAuth | default "client_secret_basic" }}
     OIDCXForwardedHeaders X-Forwarded-Proto
 {{- end }}
+
 {{- if .Values.auth.basic }}
   authbasic.conf: |
     AuthUserFile /data/config/apache/authpasswd
   authpasswd: |
 {{ .Values.auth.basic.authpasswd | indent 4 }}
 {{- end }}
+
 {{- if .Values.auth.ldap }}
   authldap.conf: |
-    AuthLDAPURL "{{ .Values.auth.ldap.authLDAPURL }}"
-    AuthLDAPBindDN "{{ .Values.auth.ldap.bindDN }}"
-    AuthLDAPBindPassword "{{ .Values.auth.ldap.bindPassword }}"
-    AuthLDAPGroupAttributeIsDN {{ .Values.auth.ldap.groupAttributeIsDN | default "true" }}
-    AuthLDAPGroupAttribute {{ .Values.auth.ldap.groupAttribute | default "member" }}
+    AuthLDAPURL {{ .Values.auth.ldap.authLDAPURL | quote }}
+    AuthLDAPBindDN {{ .Values.auth.ldap.bindDN | quote }}
+    AuthLDAPBindPassword {{ .Values.auth.ldap.bindPassword | quote }}
+    AuthLDAPGroupAttributeIsDN {{ if (hasKey .Values.auth.ldap "groupAttributeIsDN") }}{{ if .Values.auth.ldap.groupAttributeIsDN }}On{{ else }}Off{{ end }}{{ else }}On{{ end }}
+    AuthLDAPGroupAttribute {{ .Values.auth.ldap.groupAttribute | default "member" | quote }}
 {{- end }}
+
+{{- if and .Values.auth.ldap .Values.auth.ldap.cert }}
+  authldap-cert.crt: |
+{{ .Values.auth.ldap.cert | indent 4 }}
+{{- end }}
+
 {{- end }} 

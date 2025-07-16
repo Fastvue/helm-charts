@@ -46,6 +46,14 @@
 					"type": "string",
 					"description": "Require directive for admin access to Reporter"
 				},
+				"authFile": {
+					"type": "string",
+					"description": "Authentication file content"
+				},
+				"authApiFile": {
+					"type": "string",
+					"description": "Authentication API file content"
+				},
 				"paths": {
 					"type": "string",
 					"description": "Authentication paths configuration"
@@ -119,21 +127,35 @@
 							"default": "password"
 						},
 						"groupAttributeIsDN": {
-							"type": "string",
+							"type": "boolean",
 							"description": "LDAP group attribute is DN",
-							"default": "true"
+							"default": true
 						},
 						"groupAttribute": {
 							"type": "string",
 							"description": "LDAP group attribute",
 							"default": "member"
+						},
+						"cert": {
+							"type": "string",
+							"description": "LDAP certificate"
+						},
+						"verifyCert": {
+							"type": "boolean",
+							"description": "Verify LDAP certificate",
+							"default": true
 						}
 					},
 					"required": ["authLDAPURL", "bindDN", "bindPassword", "groupAttributeIsDN", "groupAttribute"]
 				}
 			},
-			"required": ["accessRequire"],
 			"allOf": [
+				{
+					"oneOf": [
+						{ "required": ["accessRequire"] },
+						{ "required": ["authFile"] }
+					]
+				},
 				{
 					"oneOf": [
 						{ "required": ["basic"] },
