@@ -46,9 +46,9 @@ spec:
             - name: FASTVUE_ELASTICSEARCH_AUTH_APIKEY
               value: "{{ .Values.elasticsearch.apiKey }}"
             {{- end }}
-            {{- if and .Values.elasticsearch .Values.elasticsearch.recordPrefix }}
+            {{- if .Values.recordPrefix }}
             - name: FASTVUE_ELASTICSEARCH_RECORDPREFIX
-              value: "{{ .Values.elasticsearch.recordPrefix }}"
+              value: "{{ .Values.recordPrefix }}"
             {{- end }}
             {{- if .Values.syslog }}
             - name: FASTVUE_DATASOURCE
