@@ -104,16 +104,23 @@ To update an existing Fastvue Reporter deployment with new values or a new image
 helm repo update
 ```
 
+Then update your values file to set `image.tag` to the new version you want to deploy. See [Image](#image) for details.
+
+```bash
+image:
+  tag: 1.0.2.92
+```
+
 Then use `helm upgrade`:
 
 ```bash
 helm upgrade reporter-abc123 fastvue/fastvue-reporter -f reporter-common.yml -f reporter-abc123.yml
 ```
 
-You can also update specific values using the `--set` flag:
+You can also specify values using the `--set` flag in combination with a values file:
 
 ```bash
-helm upgrade reporter-abc123 fastvue/fastvue-reporter --set image.tag=1.0.2.92
+helm upgrade reporter-abc123 fastvue/fastvue-reporter -f reporter-common.yml -f reporter-abc123.yml --set image.tag=1.0.2.92
 ```
 
 ## Restarting the Service
