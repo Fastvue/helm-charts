@@ -23,23 +23,51 @@ data:
 
     {{- end }}
 
-{{- if .Values.auth.accessRequire }}
   auth.conf: |
-    Require {{ .Values.auth.accessRequire }}
-{{- else if .Values.auth.authFile }}
-  auth.conf: |
-{{ .Values.auth.authFile | indent 4 }}
-{{- else }}
-  auth.conf: |
-    Require all granted
+{{- if and .Values.apache .Values.apache.cors }}
+    <LimitExcept OPTIONS>
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.allowOrigin }}
+    Header set Access-Control-Allow-Origin "{{ .Values.apache.cors.allowOrigin }}"
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.allowCredentials }}
+    Header set Access-Control-Allow-Credentials "{{ .Values.apache.cors.allowCredentials }}"
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.allowMethods }}
+    Header set Access-Control-Allow-Methods "{{ .Values.apache.cors.allowMethods }}"
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.allowHeaders }}
+    Header set Access-Control-Allow-Headers "{{ .Values.apache.cors.allowHeaders }}"
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.exposeHeaders }}
+    Header set Access-Control-Expose-Headers "{{ .Values.apache.cors.exposeHeaders }}"
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors .Values.apache.cors.maxAge }}
+    Header set Access-Control-Max-Age "{{ .Values.apache.cors.maxAge }}"
 {{- end }}
 
-{{- if .Values.auth.adminRequire }}
+{{- if .Values.auth.accessRequire }}
+    Require {{ .Values.auth.accessRequire }}
+{{- else if .Values.auth.authFile }}
+{{ .Values.auth.authFile | indent 4 }}
+{{- else }}
+    Require all granted
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors }}
+    </LimitExcept>
+{{- end }}
+
   authapi.conf: |
+{{- if and .Values.apache .Values.apache.cors }}
+    <LimitExcept OPTIONS>
+{{- end }}
+{{- if .Values.auth.adminRequire }}
     Require {{ .Values.auth.adminRequire }}
 {{- else if .Values.auth.authApiFile }}
-  authapi.conf: |
 {{ .Values.auth.authApiFile | indent 4 }}
+{{- end }}
+{{- if and .Values.apache .Values.apache.cors }}
+    </LimitExcept>
 {{- end }}
 
 {{- if .Values.auth.paths }}

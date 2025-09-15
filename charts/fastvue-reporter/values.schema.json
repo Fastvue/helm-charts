@@ -217,6 +217,54 @@
 			},
 			"required": ["port"]
 		},
+		"apache": {
+			"type": "object",
+			"properties": {
+				"general": {
+					"type": "string",
+					"description": "General Apache configuration directives"
+				},
+				"directory": {
+					"type": "string",
+					"description": "Directory-specific Apache configuration directives"
+				},
+				"cors": {
+					"type": "object",
+					"properties": {
+						"allowOrigin": {
+							"type": "string",
+							"description": "CORS allowed origins",
+							"example": "https://reporter-abc123.example.com"
+						},
+						"allowCredentials": {
+							"type": "string",
+							"description": "CORS allow credentials setting",
+							"example": "false"
+						},
+						"allowMethods": {
+							"type": "string",
+							"description": "CORS allowed HTTP methods",
+							"example": "GET, POST, PUT, DELETE, OPTIONS"
+						},
+						"allowHeaders": {
+							"type": "string",
+							"description": "CORS allowed headers",
+							"example": "Content-Type, Authorization"
+						},
+						"exposeHeaders": {
+							"type": "string",
+							"description": "CORS exposed headers",
+							"example": "Content-Type, Authorization"
+						},
+						"maxAge": {
+							"type": "string",
+							"description": "CORS max age for preflight requests",
+							"example": "3600"
+						}
+					}
+				}
+			}
+		},
 		"ingress": {
 			"type": "object",
 			"properties": {

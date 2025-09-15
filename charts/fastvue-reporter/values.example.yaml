@@ -71,6 +71,20 @@ auth:
     clientID: client-id                            # Client / application ID
     clientSecret: client-secret                    # Client secret
 
+# Apache settings --------------------------------------------------------------
+apache:
+  general: |
+    # Add any general Apache configuration here
+  directory: |
+    # Add any directory-specific Apache configuration here
+  cors: # Optional
+    allowOrigin: "https://reporter-abc123.example.com"
+    allowCredentials: "false"
+    allowMethods: "GET, POST, PUT, DELETE, OPTIONS"
+    allowHeaders: "Content-Type, Authorization"
+    exposeHeaders: "Content-Type, Authorization"
+    maxAge: "3600"
+
 # Elasticsearch settings -------------------------------------------------------
 elasticsearch:
   uri: https://es-cluster.es.region.azure.elastic-cloud.com/
