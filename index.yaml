@@ -3,6 +3,20 @@ entries:
   fastvue-reporter:
   - apiVersion: v2
     appVersion: latest
+    created: "2025-09-15T04:00:16.018107793Z"
+    description: A Helm chart for deploying Fastvue Reporter
+    digest: 0b2b10d65420b0feb69ba1717dbeed8a12a015cf5d6f4a43e9687911b7f34c93
+    home: https://fastvue.co/
+    icon: https://res.fastvue.co/logo/fastvue_logo_64x64.png
+    name: fastvue-reporter
+    sources:
+    - https://github.com/fastvue/helm-charts/tree/main/charts/fastvue-reporter
+    type: application
+    urls:
+    - https://github.com/Fastvue/helm-charts/releases/download/fastvue-reporter-0.1.5/fastvue-reporter-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: latest
     created: "2025-08-18T07:04:55.623582592Z"
     description: A Helm chart for deploying Fastvue Reporter
     digest: 63c36405f959afc78d0bd5a7ee8a5cbac3751e80d97862f0687dbf8198bc9904
@@ -43,4 +57,4 @@ entries:
     urls:
     - https://github.com/Fastvue/helm-charts/releases/download/fastvue-reporter-0.1.2/fastvue-reporter-0.1.2.tgz
     version: 0.1.2
-generated: "2025-08-18T07:04:55.623598812Z"
+generated: "2025-09-15T04:00:16.018122751Z"
