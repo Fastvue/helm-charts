@@ -7,6 +7,10 @@ namespace: fastvue-reporter-abc123                # Kubernetes namespace
 hostname: reporter-abc123.example.com             # Public hostname of the Reporter instance
 recordPrefix: fvr-abc123                          # Used as index prefix for Elasticsearch
 
+# Timezone setting (optional) - uses tz database format (e.g., "America/New_York", "Europe/London", see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for a full list)
+# If specified, will be passed to the container via the TZ environment variable
+timezone: "America/New_York"
+
 # Container image settings -----------------------------------------------------
 image:
   brand: brand                                    # See https://hub.docker.com/u/fastvue?search=reporter for available brands

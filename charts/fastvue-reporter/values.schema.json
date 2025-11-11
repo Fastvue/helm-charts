@@ -217,6 +217,11 @@
 			},
 			"required": ["port"]
 		},
+		"timezone": {
+			"type": "string",
+			"description": "Timezone for the instance using the tz database format (e.g., 'America/New_York', 'Europe/London'). If specified, will be passed to the container via the TZ environment variable.",
+			"example": "America/New_York"
+		},
 		"apache": {
 			"type": "object",
 			"properties": {

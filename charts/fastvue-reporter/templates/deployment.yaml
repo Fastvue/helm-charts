@@ -54,6 +54,10 @@ spec:
             - name: FASTVUE_DATASOURCE
               value: "*:50514"
             {{- end }}
+            {{- if .Values.timezone }}
+            - name: TZ
+              value: "{{ .Values.timezone }}"
+            {{- end }}
           resources:
             requests:
               cpu: "{{ .Values.resources.cpuMinimum | default 0.25 }}"
