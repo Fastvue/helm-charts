@@ -2,7 +2,7 @@ apiVersion: v2
 name: fastvue-reporter
 description: A Helm chart for deploying Fastvue Reporter
 type: application
-version: 0.1.5
+version: 0.1.6
 appVersion: "latest" 
 home: https://fastvue.co/
 sources:
